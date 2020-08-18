@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-author : shenshuo
-date   : 2017年11月14日20:11:27
 role   : 启动程序
 """
 

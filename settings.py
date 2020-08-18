@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-Author : shenshuo
-Date   : 2017-10-11 12:58:26
 Desc   : 配置文件
 """
 

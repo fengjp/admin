@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-author : shenshuo
-date   : 2018年10月23日
 desc   : 管理后台数据库
 """
-
 
 from sqlalchemy import Column, String, Integer, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,7 +31,6 @@ class OperationRecord(Base):
     uri = Column('uri', String(150))
     data = Column('data', Text())
     ctime = Column('ctime', DateTime(), default=datetime.now, onupdate=datetime.now)
-
 
 
 class Users(Base):
@@ -107,6 +103,7 @@ class Menus(Base):
     menu_name = Column('menu_name', String(60))
     status = Column('status', String(5), default='0')
 
+
 class RoleMenus(Base):
     __tablename__ = 'mg_role_menus'
 
@@ -115,6 +112,7 @@ class RoleMenus(Base):
     role_id = Column('role_id', String(11))
     menu_id = Column('menu_id', String(11))
     status = Column('status', String(5), default='0')
+
 
 class Functions(Base):
     __tablename__ = 'mg_functions'
@@ -137,3 +135,17 @@ class RoleFunctions(Base):
     role_id = Column('role_id', String(11))
     func_id = Column('func_id', String(11))
     status = Column('status', String(5), default='0')
+
+
+class Stakeholder(Base):
+    __tablename__ = 'mg_stakeholder'
+
+    ### 干系人表
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    username = Column('username', String(50), unique=True)
+    nickname = Column('nickname', String(100))
+    email = Column('email', String(80), unique=True)  ### 邮箱
+    tel = Column('tel', String(11))  ### 手机号
+    wechat = Column('wechat', String(50))  ### 微信号
+    department = Column('department', String(50))  ### 部门
+    ctime = Column('ctime', DateTime(), default=datetime.now)

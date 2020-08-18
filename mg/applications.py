@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-Author : shenshuo
-date   : 2017-10-11
 role   : 管理端 Application
 """
 
@@ -18,6 +16,8 @@ from mg.handlers.app_mg_handler import app_mg_urls
 from mg.handlers.app_settings_handler import app_settings_urls
 from mg.handlers.notifications_handler import notifications_urls
 from mg.handlers.dictconfig_handler import dictconfig_urls
+from mg.handlers.stakeholder_handler import stakeholder_urls
+
 
 class Application(myApplication):
     def __init__(self, **settings):
@@ -33,6 +33,7 @@ class Application(myApplication):
         urls.extend(app_settings_urls)
         urls.extend(notifications_urls)
         urls.extend(dictconfig_urls)
+        urls.extend(stakeholder_urls)
         super(Application, self).__init__(urls, **settings)
 
 
