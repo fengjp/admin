@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-author : shenshuo
-date   : 2017年11月20日15:52:07
 role   : 缓存权限
 """
 
