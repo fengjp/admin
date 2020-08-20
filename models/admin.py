@@ -142,10 +142,10 @@ class Stakeholder(Base):
 
     ### 干系人表
     id = Column('id', Integer, primary_key=True, autoincrement=True)
-    username = Column('username', String(50), unique=True)
+    username = Column('username', String(50))
     nickname = Column('nickname', String(100))
     email = Column('email', String(80), unique=True)  ### 邮箱
-    tel = Column('tel', String(11))  ### 手机号
-    wechat = Column('wechat', String(50))  ### 微信号
+    tel = Column('tel', String(11), unique=True)  ### 手机号
+    wechat = Column('wechat', String(50), unique=True)  ### 微信号
     department = Column('department', String(50))  ### 部门
     ctime = Column('ctime', DateTime(), default=datetime.now)
