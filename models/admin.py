@@ -143,9 +143,12 @@ class Stakeholder(Base):
     ### 干系人表
     id = Column('id', Integer, primary_key=True, autoincrement=True)
     username = Column('username', String(50))
-    nickname = Column('nickname', String(100))
-    email = Column('email', String(80), unique=True)  ### 邮箱
-    tel = Column('tel', String(11), unique=True)  ### 手机号
-    wechat = Column('wechat', String(50), unique=True)  ### 微信号
+    company = Column('company', String(150))  ### 单位
     department = Column('department', String(50))  ### 部门
+    position = Column('position', String(100))
+    range = Column('range', String(100))
+    tel = Column('tel', String(11), unique=True)  ### 手机号
+    email = Column('email', String(50), unique=True)  ### 邮箱
+    addr = Column('addr', String(500), unique=True)
+    remarks = Column('remarks', String(500), unique=True)
     ctime = Column('ctime', DateTime(), default=datetime.now)

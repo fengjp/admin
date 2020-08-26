@@ -59,8 +59,8 @@ class DictConfigHandler(BaseHandler):
         data = json.loads(self.request.body.decode("utf-8"))
         dictname = data.get('dictname', None)
         dictkey = data.get('dictkey', None)
-        dictvalue = data.get('dictvalue', None)
-        # ins_log.read_log('info', data)
+        dictvalue = str(data.get('dictvalue', None))
+        ins_log.read_log('info', data)
         dictvalue = dictvalue.replace('\'', '\"').replace('\n', '').replace('\r', '').replace(' ', '')
         try:
             json.loads(dictvalue)
@@ -89,8 +89,8 @@ class DictConfigHandler(BaseHandler):
         id = data.get('id', None)
         dictname = data.get('dictname', None)
         dictkey = data.get('dictkey', None)
-        dictvalue = data.get('dictvalue', None)
-
+        dictvalue = str(data.get('dictvalue', None))
+        ins_log.read_log('info', data)
         try:
             json.loads(dictvalue)
         except:
