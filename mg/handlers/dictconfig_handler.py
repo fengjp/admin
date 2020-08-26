@@ -61,11 +61,11 @@ class DictConfigHandler(BaseHandler):
         dictkey = data.get('dictkey', None)
         dictvalue = str(data.get('dictvalue', None))
         ins_log.read_log('info', data)
-        dictvalue = dictvalue.replace('\'', '\"').replace('\n', '').replace('\r', '').replace(' ', '')
-        try:
-            json.loads(dictvalue)
-        except:
-            return self.write(dict(code=-4, msg="字典值 格式错误"))
+        # dictvalue = dictvalue.replace('\'', '\"').replace('\n', '').replace('\r', '').replace(' ', '')
+        # try:
+        #     json.loads(dictvalue)
+        # except:
+        #     return self.write(dict(code=-4, msg="字典值 格式错误"))
 
         if not dictkey:
             return self.write(dict(code=-1, msg='字典KEY不能为空'))
@@ -91,10 +91,10 @@ class DictConfigHandler(BaseHandler):
         dictkey = data.get('dictkey', None)
         dictvalue = str(data.get('dictvalue', None))
         ins_log.read_log('info', data)
-        try:
-            json.loads(dictvalue)
-        except:
-            return self.write(dict(code=-4, msg="字典值 格式错误"))
+        # try:
+        #     json.loads(dictvalue)
+        # except:
+        #     return self.write(dict(code=-4, msg="字典值 格式错误"))
 
         if not dictkey:
             return self.write(dict(code=-1, msg='字典KEY不能为空'))
