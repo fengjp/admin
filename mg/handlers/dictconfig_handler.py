@@ -114,6 +114,12 @@ class DictConfigHandler(BaseHandler):
         if not id:
             return self.write(dict(code=-1, msg='ID不能为空'))
 
+        redis_conn = cache_conn()
+        with DBContext('r') as session:
+            dictkey = session.query(DictConfig.dictkey).filter(DictConfig.id == id).first()
+            # ins_log.read_log('info', dictkey)
+            redis_conn.hdel('dictconf_hash', dictkey[0])
+
         with DBContext('w', None, True) as session:
             session.query(DictConfig).filter(DictConfig.id == id).delete(synchronize_session=False)
 
