@@ -146,9 +146,24 @@ class Stakeholder(Base):
     company = Column('company', String(150))  ### 单位
     department = Column('department', String(50))  ### 部门
     position = Column('position', String(100))
-    range = Column('range', String(100))
+    duty = Column('duty', String(100))
     tel = Column('tel', String(11), unique=True)  ### 手机号
     email = Column('email', String(50), unique=True)  ### 邮箱
-    addr = Column('addr', String(500), unique=True)
-    remarks = Column('remarks', String(500), unique=True)
+    addr = Column('addr', String(500))
+    remarks = Column('remarks', String(500))
+    ctime = Column('ctime', DateTime(), default=datetime.now)
+
+class Companylist(Base):
+    __tablename__ = 'mg_companylist'
+
+    ### 干系人表
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    company = Column('company', String(150))  ### 单位
+    addr = Column('addr', String(500), )
+    bossname = Column('bossname', String(50))
+    duty = Column('duty', String(500))
+    tel = Column('tel', String(11), unique=True)  ### 手机号
+    website = Column('website', String(100),)
+    email = Column('email', String(50), unique=True)  ### 邮箱
+    remarks = Column('remarks', String(500), )
     ctime = Column('ctime', DateTime(), default=datetime.now)
