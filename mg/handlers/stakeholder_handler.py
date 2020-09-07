@@ -15,7 +15,7 @@ from websdk.jwt_token import gen_md5
 from websdk.tools import check_password
 from libs.base_handler import BaseHandler
 from websdk.db_context import DBContext
-from models.admin import UserRoles,Stakeholder, model_to_dict
+from models.admin import UserRoles,Stakeholder,Companylist, model_to_dict
 from websdk.consts import const
 from websdk.cache_context import cache_conn
 from websdk.tools import convert
@@ -228,7 +228,7 @@ class uploadStakeholder(BaseHandler):
         ###文件保存到本地
         Base_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         upload_path = '{}/static/stakeholder/'.format(Base_DIR)
-        file_body = self.request.files["file"][0]["body"]  # 提取表单中‘name’为‘file’的文件元数据
+        file_body = self.request.files["file"][0]["body"]
         file_path = upload_path + "tempfile.xls"
         with open(file_path, 'wb') as up:
             up.write(file_body)
@@ -245,6 +245,14 @@ class uploadStakeholder(BaseHandler):
             addr = str(df.iloc[i, 6]),
             email = str(df.iloc[i, 7]),
             remarks = str(df.iloc[i, 8]),
+            with DBContext('r') as session:
+                tocount = session.query(Companylist).filter(Companylist.company == company).count()
+            if tocount <= 0:
+                with DBContext('w', None, True) as session:
+                    session.add(Companylist(
+                        company=company,
+                    ))
+                    session.commit()
             try:
                 with DBContext('w', None, True) as session:
                     session.add(Stakeholder(
