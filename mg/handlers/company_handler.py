@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
-"""
-role   : 用户管理API
-
-status = '0'    正常
-status = '10'   逻辑删除
-status = '20'   禁用
-"""
 
 import json
 import shortuuid

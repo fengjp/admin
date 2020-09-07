@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf-8-*-
-"""
-role   : 用户管理API
 
-status = '0'    正常
-status = '10'   逻辑删除
-status = '20'   禁用
-"""
 
 import json
 import shortuuid
@@ -15,12 +9,12 @@ from websdk.jwt_token import gen_md5
 from websdk.tools import check_password
 from libs.base_handler import BaseHandler
 from websdk.db_context import DBContext
-from models.admin import UserRoles,Stakeholder,Companylist, model_to_dict
+from models.admin import UserRoles, Stakeholder, Companylist, model_to_dict
 from websdk.consts import const
 from websdk.cache_context import cache_conn
 from websdk.tools import convert
 from websdk.web_logs import ins_log
-import  os
+import os
 import pandas as pd
 
 
@@ -30,8 +24,9 @@ def sync_stakeholder_to_redis():
         dict_info = session.query(Stakeholder).all()
     for msg in dict_info:
         data_dict = model_to_dict(msg)
-        tempstr  =  data_dict["username"] + '--' +  data_dict["company"]
+        tempstr = data_dict["username"] + '--' + data_dict["company"]
         redis_conn.hset('stakeholder_hash', data_dict["id"], tempstr)
+
 
 class StakeholderHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -63,7 +58,8 @@ class StakeholderHandler(BaseHandler):
             if key == "remarks":
                 conditions.append(Stakeholder.remarks.like('%{}%'.format(value)))
 
-            todata = session.query(Stakeholder).filter(*conditions).order_by(Stakeholder.ctime.desc()).offset(limit_start).limit(int(limit)).all()
+            todata = session.query(Stakeholder).filter(*conditions).order_by(Stakeholder.ctime.desc()).offset(
+                limit_start).limit(int(limit)).all()
             tocount = session.query(Stakeholder).filter(*conditions).count()
 
         for msg in todata:
@@ -79,7 +75,6 @@ class StakeholderHandler(BaseHandler):
             case_dict["addr"] = data_dict["addr"]
             case_dict["email"] = data_dict["email"]
             case_dict["remarks"] = data_dict["remarks"]
-
 
             case_dict["ctime"] = str(data_dict["ctime"])
             data_list.append(case_dict)
@@ -100,7 +95,7 @@ class StakeholderHandler(BaseHandler):
         addr = data.get('addr', None)
         email = data.get('email', None)
         remarks = data.get('remarks', None)
-        if not username or not  company :
+        if not username or not company:
             return self.write(dict(code=-1, msg='参数不能为空'))
         with DBContext('r') as session:
             user_info2 = session.query(Stakeholder).filter(Stakeholder.tel == tel).first()
@@ -163,15 +158,15 @@ class StakeholderHandler(BaseHandler):
         try:
             with DBContext('w', None, True) as session:
                 session.query(Stakeholder).filter(Stakeholder.id == id).update({
-                Stakeholder.username: username,
-                Stakeholder.company: company,
-                Stakeholder.department: department,
-                Stakeholder.position: position,
-                Stakeholder.duty: duty,
-                Stakeholder.tel: tel,
-                Stakeholder.addr: addr,
-                Stakeholder.email: email,
-                Stakeholder.remarks: remarks,
+                    Stakeholder.username: username,
+                    Stakeholder.company: company,
+                    Stakeholder.department: department,
+                    Stakeholder.position: position,
+                    Stakeholder.duty: duty,
+                    Stakeholder.tel: tel,
+                    Stakeholder.addr: addr,
+                    Stakeholder.email: email,
+                    Stakeholder.remarks: remarks,
                 })
                 session.commit()
         except Exception as e:
@@ -179,26 +174,30 @@ class StakeholderHandler(BaseHandler):
         sync_stakeholder_to_redis()
         self.write(dict(code=0, msg='编辑成功'))
 
+
 class Stakeholder_redisList(BaseHandler):
     def get(self, *args, **kwargs):
         data_list = []
         redis_conn = cache_conn()
         stakeholder_all = redis_conn.hgetall('stakeholder_hash')
         data_dict = convert(stakeholder_all)
-        for k , v in data_dict.items():
-            data_list.append({"k":k,"v":v})
+        for k, v in data_dict.items():
+            data_list.append({"k": k, "v": v})
             # ins_log.read_log('info', k)
         if len(data_list) > 0:
             self.write(dict(code=0, msg='获取成功', data=data_list))
         else:
-            self.write(dict(code=-1, msg='没有相关数据',  data=[]))
+            self.write(dict(code=-1, msg='没有相关数据', data=[]))
+
+
 class StakeholderList(BaseHandler):
     def get(self, *args, **kwargs):
         data_list = []
         value = self.get_argument('value', default=None, strip=True)
         user_list = []
         with DBContext('r') as session:
-            todata = session.query(Stakeholder).filter(Stakeholder.company == value).order_by(Stakeholder.ctime.desc()).all()
+            todata = session.query(Stakeholder).filter(Stakeholder.company == value).order_by(
+                Stakeholder.ctime.desc()).all()
             tocount = session.query(Stakeholder).filter(Stakeholder.company == value).count()
 
         for msg in todata:
@@ -235,9 +234,9 @@ class uploadStakeholder(BaseHandler):
         df = pd.read_excel(file_path)
         allsum = len(df.index)
         ins_log.read_log('info', allsum)
-        for i in  range(0 , allsum):
+        for i in range(0, allsum):
             username = str(df.iloc[i, 0]),
-            company = str(df.iloc[i,1]),
+            company = str(df.iloc[i, 1]),
             department = str(df.iloc[i, 2]),
             position = str(df.iloc[i, 3]),
             duty = str(df.iloc[i, 4]),
@@ -271,9 +270,11 @@ class uploadStakeholder(BaseHandler):
                 continue
         # session.commit()
         sync_stakeholder_to_redis()
+
+
 stakeholder_urls = [
     (r"/v2/accounts/stakeholder/", StakeholderHandler),
-    (r"/v2/accounts/redislist/", Stakeholder_redisList),
+    (r"/v2/accounts/stakeholderredislist/", Stakeholder_redisList),
     (r"/v2/accounts/stakeholderlist/", StakeholderList),
     (r"/v2/accounts/stakeholder/upload/", uploadStakeholder),
 ]
