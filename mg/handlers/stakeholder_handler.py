@@ -24,7 +24,7 @@ def sync_stakeholder_to_redis():
         dict_info = session.query(Stakeholder).all()
     for msg in dict_info:
         data_dict = model_to_dict(msg)
-        tempstr = data_dict["username"] + '--' + data_dict["company"]
+        tempstr = data_dict["username"]
         redis_conn.hset('stakeholder_hash', data_dict["id"], tempstr)
 
 
@@ -193,12 +193,13 @@ class Stakeholder_redisList(BaseHandler):
 class StakeholderList(BaseHandler):
     def get(self, *args, **kwargs):
         data_list = []
+        key = self.get_argument('key', default=None, strip=True)
         value = self.get_argument('value', default=None, strip=True)
         user_list = []
-        with DBContext('r') as session:
-            todata = session.query(Stakeholder).filter(Stakeholder.company == value).order_by(
-                Stakeholder.ctime.desc()).all()
-            tocount = session.query(Stakeholder).filter(Stakeholder.company == value).count()
+        if key == "company":
+            with DBContext('r') as session:
+                todata = session.query(Stakeholder).filter(Stakeholder.company == value).order_by(Stakeholder.ctime.desc()).all()
+                tocount = session.query(Stakeholder).filter(Stakeholder.company == value).count()
 
         for msg in todata:
             case_dict = {}

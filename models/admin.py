@@ -156,14 +156,16 @@ class Stakeholder(Base):
 class Companylist(Base):
     __tablename__ = 'mg_companylist'
 
-    ### 干系人表
     id = Column('id', Integer, primary_key=True, autoincrement=True)
-    company = Column('company', String(150))  ### 单位
+    company_id = Column('company_id', String(30))  ### 上级id
+    company = Column('company', String(150))  ### 单位/上级部门
     addr = Column('addr', String(500), )
-    bossname = Column('bossname', String(50))
-    duty = Column('duty', String(500))
+    bossname = Column('bossname', String(50))  #法人/负责人
+    department = Column('department', String(50))  ### 部门
+    duty = Column('duty', String(500)) #职责范围
     tel = Column('tel', String(11), unique=True)  ### 手机号
     website = Column('website', String(100),)
-    email = Column('email', String(50), unique=True)  ### 邮箱
+    email = Column('email', String(50), )  ### 邮箱
     remarks = Column('remarks', String(500), )
+    level = Column('level', String(3), ) #部门级别
     ctime = Column('ctime', DateTime(), default=datetime.now)
