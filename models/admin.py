@@ -163,7 +163,7 @@ class Companylist(Base):
     bossname = Column('bossname', String(50))  #法人/负责人
     department = Column('department', String(50))  ### 部门
     duty = Column('duty', String(500)) #职责范围
-    tel = Column('tel', String(11), unique=True)  ### 手机号
+    tel = Column('tel', String(11))  ### 手机号
     website = Column('website', String(100),)
     email = Column('email', String(50), )  ### 邮箱
     remarks = Column('remarks', String(500), )

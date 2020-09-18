@@ -114,14 +114,14 @@ class CompanyHandler(BaseHandler):
         if len(company_id) <= 0:
             company_id = '/'
 
-        with DBContext('r') as session:
-            user_info2 = session.query(Companylist).filter(Companylist.tel == tel).first()
-            user_info3 = session.query(Companylist).filter(Companylist.email == email).first()
+        # with DBContext('r') as session:
+        #     user_info2 = session.query(Companylist).filter(Companylist.tel == tel).first()
+        #     user_info3 = session.query(Companylist).filter(Companylist.email == email).first()
         # if user_info1:
         #     return self.write(dict(code=-2, msg='微信号已存在，请重新输入。'))
 
-        if user_info2:
-            return self.write(dict(code=-3, msg='手机号已存在，请重新输入。'))
+        # if user_info2:
+        #     return self.write(dict(code=-3, msg='手机号已存在，请重新输入。'))
 
         # if user_info3:
         #     return self.write(dict(code=-4, msg='邮箱已存在，请重新输入。'))
