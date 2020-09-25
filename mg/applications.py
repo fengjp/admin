@@ -18,6 +18,8 @@ from mg.handlers.notifications_handler import notifications_urls
 from mg.handlers.dictconfig_handler import dictconfig_urls
 from mg.handlers.stakeholder_handler import stakeholder_urls
 from mg.handlers.company_handler import company_urls
+from mg.handlers.people_handler import peoplelist_urls
+from mg.handlers.post_handler import postlist_urls
 
 
 class Application(myApplication):
@@ -36,6 +38,8 @@ class Application(myApplication):
         urls.extend(dictconfig_urls)
         urls.extend(stakeholder_urls)
         urls.extend(company_urls)
+        urls.extend(peoplelist_urls)
+        urls.extend(postlist_urls)
         super(Application, self).__init__(urls, **settings)
 
 

@@ -169,3 +169,21 @@ class Companylist(Base):
     remarks = Column('remarks', String(500), )
     level = Column('level', String(3), ) #部门级别
     ctime = Column('ctime', DateTime(), default=datetime.now)
+
+class Peoplelist(Base):
+    __tablename__ = 'mg_peoplelist'
+
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    username = Column('username', String(30))
+    jobpost = Column('jobpost', String(50))
+    tel = Column('tel', String(30))
+    ctime = Column('ctime', DateTime(), default=datetime.now)
+
+class Postlist(Base):
+    __tablename__ = 'mg_postlist'
+
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    postname = Column('postname', String(30))
+    outline = Column('outline', String(500))
+    remarks = Column('remarks', String(1500))
+    ctime = Column('ctime', DateTime(), default=datetime.now)
