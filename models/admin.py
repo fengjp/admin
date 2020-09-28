@@ -177,6 +177,9 @@ class Peoplelist(Base):
     username = Column('username', String(30))
     jobpost = Column('jobpost', String(50))
     tel = Column('tel', String(30))
+    startdate = Column('startdate',DateTime())
+    enddate = Column('enddate',DateTime())
+    othername = Column('othername', String(30))
     ctime = Column('ctime', DateTime(), default=datetime.now)
 
 class Postlist(Base):
