@@ -58,7 +58,7 @@ class PostlistHandler(BaseHandler):
         data = json.loads(self.request.body.decode("utf-8"))
         postname = data.get('postname', None)
         outline = data.get('outline', None)
-        remarks = data.get('remarks', None)
+        remarks = str(data.get('remarks', None))
 
 
         with DBContext('w', None, True) as session:
@@ -86,7 +86,7 @@ class PostlistHandler(BaseHandler):
         id = data.get('id', None)
         postname = data.get('postname', None)
         outline = data.get('outline', None)
-        remarks = data.get('remarks', None)
+        remarks = str(data.get('remarks', None))
 
         try:
             with DBContext('w', None, True) as session:
