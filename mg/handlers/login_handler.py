@@ -119,6 +119,7 @@ class LoginHandler(RequestHandler):
                     return self.write(dict(code=-5, msg='MFA错误'))
 
         user_id = str(user_info.user_id)
+
         ### 生成token 并写入cookie
         token_exp_hours = redis_conn.hget(const.APP_SETTINGS, const.TOKEN_EXP_TIME)
         if token_exp_hours and convert(token_exp_hours):
@@ -139,6 +140,7 @@ class LoginHandler(RequestHandler):
         self.set_secure_cookie("nickname", user_info.nickname)
         self.set_secure_cookie("username", user_info.username)
         self.set_secure_cookie("user_id", str(user_info.user_id))
+        # cookie 值'auth_key'的有效时间在前端控制了
         self.set_cookie('auth_key', auth_key, expires_days=1)
 
         ### 后端权限写入缓存
@@ -146,6 +148,13 @@ class LoginHandler(RequestHandler):
         my_verify.write_verify()
         ### 前端权限写入缓存
         # get_user_rules(user_id, is_superuser)
+
+        # 将 auth_key 写入redis 作为 单点登录验证
+        if token_exp_hours:
+            ex = int(token_exp_hours) * 3600
+            redis_conn.set(user_id, auth_key, ex=ex)
+        else:
+            redis_conn.set(user_id, auth_key)
 
         return self.write(dict(code=0, auth_key=auth_key.decode(), username=user_info.username,
                                nickname=user_info.nickname, msg='登录成功'))
