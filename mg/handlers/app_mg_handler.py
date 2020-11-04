@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Date    : 2018/10/29
 Desc    : 应用相关逻辑
 """
 
@@ -13,7 +12,7 @@ from tornado.web import RequestHandler
 from websdk.jwt_token import gen_md5
 from websdk.tools import check_password
 from libs.base_handler import BaseHandler
-from models.admin import OperationRecord, Users, model_to_dict
+from models.admin import OperationRecord, Users, model_to_dict, OperationRecordForGET
 from websdk.db_context import DBContext
 from websdk.base_handler import LivenessProbe
 from dateutil.relativedelta import relativedelta
@@ -59,6 +58,48 @@ class LogHandler(BaseHandler):
                 log_info = session.query(OperationRecord).filter(OperationRecord.ctime > start_time_tuple,
                                                                  OperationRecord.ctime < end_time_tuple).order_by(
                     -OperationRecord.ctime).offset(limit_start).limit(int(limit))
+
+        for msg in log_info:
+            data_dict = model_to_dict(msg)
+            data_dict['ctime'] = str(data_dict['ctime'])
+            log_list.append(data_dict)
+
+        return self.write(dict(code=0, msg='获取日志成功', count=count, data=log_list))
+
+
+class GetLogHandler(BaseHandler):
+    def get(self, *args, **kwargs):
+        page_size = self.get_argument('page', default=1, strip=True)
+        limit = self.get_argument('limit', default=10, strip=True)
+        key = self.get_argument('key', default=None, strip=True)
+        value = self.get_argument('value', default=None, strip=True)
+        start_date = self.get_argument('start_date', default=None, strip=True)
+        end_date = self.get_argument('end_date', default=None, strip=True)
+        limit_start = (int(page_size) - 1) * int(limit)
+
+        if not start_date:
+            start_date = datetime.date.today() - relativedelta(months=+1)
+        if not end_date:
+            end_date = datetime.date.today() + datetime.timedelta(days=1)
+
+        start_time_tuple = time.strptime(str(start_date), '%Y-%m-%d')
+        end_time_tuple = time.strptime(str(end_date), '%Y-%m-%d')
+        log_list = []
+
+        with DBContext('r') as session:
+            if key and value:
+                count = session.query(OperationRecordForGET).filter(OperationRecordForGET.ctime > start_time_tuple,
+                                                                    OperationRecordForGET.ctime < end_time_tuple).filter_by(
+                    **{key: value}).count()
+                log_info = session.query(OperationRecordForGET).filter(OperationRecordForGET.ctime > start_time_tuple,
+                                                                       OperationRecordForGET.ctime < end_time_tuple).filter_by(
+                    **{key: value}).order_by(-OperationRecordForGET.ctime)
+            else:
+                count = session.query(OperationRecordForGET).filter(OperationRecordForGET.ctime > start_time_tuple,
+                                                                    OperationRecordForGET.ctime < end_time_tuple).count()
+                log_info = session.query(OperationRecordForGET).filter(OperationRecordForGET.ctime > start_time_tuple,
+                                                                       OperationRecordForGET.ctime < end_time_tuple).order_by(
+                    -OperationRecordForGET.ctime).offset(limit_start).limit(int(limit))
 
         for msg in log_info:
             data_dict = model_to_dict(msg)
@@ -277,6 +318,7 @@ class TokenHandler(BaseHandler):
 
 app_mg_urls = [
     (r"/v2/app/opt_log/", LogHandler),
+    (r"/v2/app/opt_log_for_get/", GetLogHandler),
     (r"/register/", UserRegisterHandler),
     (r"/v2/accounts/password/", PasswordHandler),
     (r"/v2/accounts/reset_mfa/", ResetMFAHandler),

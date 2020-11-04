@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Date    : 2018/10/26
 Desc    : 订阅redis的消息，写入数据库
 """
 import json
 import redis
 from websdk.db_context import DBContext
-from models.admin import OperationRecord
+from models.admin import OperationRecord, OperationRecordForGET
 from websdk.consts import const
+from urllib import parse
 
 
 class RedisSubscriber:
@@ -42,14 +42,22 @@ class RedisSubscriber:
                             body_data = str(data.get('data'))
                         else:
                             body_data = ''
+                        if data.get('method') == 'GET':
+                            body_data = data.get('uri').split('?')[1] if len(data.get('uri').split('?')) > 1 else ''
+                            body_data = parse.unquote_plus(body_data)
                         if data.get('login_ip'):
                             login_ip = data.get('login_ip').split(',')[0]
                         else:
                             login_ip = ''
                         uri = data.get('uri').split('?')[0] if len(data.get('uri').split('?')) > 1 else data.get('uri')
-                        session.add(OperationRecord(username=data.get('username'), nickname=data.get('nickname'),
-                                                    login_ip=login_ip, method=data.get('method'),uri=uri,
-                                                    data=body_data, ctime=data.get('time')))
+                        if data.get('method') == 'GET':
+                            session.add(OperationRecordForGET(username=data.get('username'), nickname=data.get('nickname'),
+                                                        login_ip=login_ip, method=data.get('method'), uri=uri,
+                                                        data=body_data, ctime=data.get('time')))
+                        else:
+                            session.add(OperationRecord(username=data.get('username'), nickname=data.get('nickname'),
+                                                        login_ip=login_ip, method=data.get('method'), uri=uri,
+                                                        data=body_data, ctime=data.get('time')))
                         session.commit()
                     if item['data'] == 'over':
                         break

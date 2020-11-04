@@ -32,6 +32,18 @@ class OperationRecord(Base):
     data = Column('data', Text())
     ctime = Column('ctime', DateTime(), default=datetime.now, onupdate=datetime.now)
 
+class OperationRecordForGET(Base):
+    __tablename__ = 'operation_record_for_get'
+
+    ### 操作get记录
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    username = Column('username', String(50))
+    nickname = Column('nickname', String(50))
+    login_ip = Column('login_ip', String(20))
+    method = Column('method', String(10))
+    uri = Column('uri', String(150))
+    data = Column('data', Text())
+    ctime = Column('ctime', DateTime(), default=datetime.now, onupdate=datetime.now)
 
 class Users(Base):
     __tablename__ = 'mg_users'
