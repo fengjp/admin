@@ -6,10 +6,11 @@ Desc    : 订阅redis的消息，写入数据库
 import json
 import redis
 from websdk.db_context import DBContext
-from models.admin import OperationRecord, OperationRecordForGET
+from models.admin import OperationRecord
 from websdk.consts import const
 from urllib import parse
 
+ignore_uri = ['/api/mg/v2/app/opt_log/']
 
 class RedisSubscriber:
     """
@@ -50,14 +51,11 @@ class RedisSubscriber:
                         else:
                             login_ip = ''
                         uri = data.get('uri').split('?')[0] if len(data.get('uri').split('?')) > 1 else data.get('uri')
-                        if data.get('method') == 'GET':
-                            session.add(OperationRecordForGET(username=data.get('username'), nickname=data.get('nickname'),
-                                                        login_ip=login_ip, method=data.get('method'), uri=uri,
-                                                        data=body_data, ctime=data.get('time')))
-                        else:
-                            session.add(OperationRecord(username=data.get('username'), nickname=data.get('nickname'),
-                                                        login_ip=login_ip, method=data.get('method'), uri=uri,
-                                                        data=body_data, ctime=data.get('time')))
+                        if uri in ignore_uri:
+                            continue
+                        session.add(OperationRecord(username=data.get('username'), nickname=data.get('nickname'),
+                                                    login_ip=login_ip, method=data.get('method'), uri=uri,
+                                                    data=body_data, ctime=data.get('time')))
                         session.commit()
                     if item['data'] == 'over':
                         break

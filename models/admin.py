@@ -27,23 +27,11 @@ class OperationRecord(Base):
     username = Column('username', String(50))
     nickname = Column('nickname', String(50))
     login_ip = Column('login_ip', String(20))
-    method = Column('method', String(10))
-    uri = Column('uri', String(150))
+    method = Column('method', String(10), index=True)
+    uri = Column('uri', String(150), index=True)
     data = Column('data', Text())
     ctime = Column('ctime', DateTime(), default=datetime.now, onupdate=datetime.now)
 
-class OperationRecordForGET(Base):
-    __tablename__ = 'operation_record_for_get'
-
-    ### 操作get记录
-    id = Column('id', Integer, primary_key=True, autoincrement=True)
-    username = Column('username', String(50))
-    nickname = Column('nickname', String(50))
-    login_ip = Column('login_ip', String(20))
-    method = Column('method', String(10))
-    uri = Column('uri', String(150))
-    data = Column('data', Text())
-    ctime = Column('ctime', DateTime(), default=datetime.now, onupdate=datetime.now)
 
 class Users(Base):
     __tablename__ = 'mg_users'
@@ -165,6 +153,7 @@ class Stakeholder(Base):
     remarks = Column('remarks', String(500))
     ctime = Column('ctime', DateTime(), default=datetime.now)
 
+
 class Companylist(Base):
     __tablename__ = 'mg_companylist'
 
@@ -172,15 +161,16 @@ class Companylist(Base):
     company_id = Column('company_id', String(30))  ### 上级id
     company = Column('company', String(150))  ### 单位/上级部门
     addr = Column('addr', String(500), )
-    bossname = Column('bossname', String(50))  #法人/负责人
+    bossname = Column('bossname', String(50))  # 法人/负责人
     department = Column('department', String(50))  ### 部门
-    duty = Column('duty', String(500)) #职责范围
+    duty = Column('duty', String(500))  # 职责范围
     tel = Column('tel', String(11))  ### 手机号
-    website = Column('website', String(100),)
+    website = Column('website', String(100), )
     email = Column('email', String(50), )  ### 邮箱
     remarks = Column('remarks', String(500), )
-    level = Column('level', String(3), ) #部门级别
+    level = Column('level', String(3), )  # 部门级别
     ctime = Column('ctime', DateTime(), default=datetime.now)
+
 
 class Peoplelist(Base):
     __tablename__ = 'mg_peoplelist'
@@ -193,12 +183,13 @@ class Peoplelist(Base):
     jobpost = Column('jobpost', String(50))
     tel = Column('tel', String(30))
     department = Column('department', String(50))
-    supe_department = Column('supe_department',String(50))
-    level =  Column('level',String(10))
-    startdate = Column('startdate',DateTime(),default=datetime.now)
-    enddate = Column('enddate',DateTime())
+    supe_department = Column('supe_department', String(50))
+    level = Column('level', String(10))
+    startdate = Column('startdate', DateTime(), default=datetime.now)
+    enddate = Column('enddate', DateTime())
     othername = Column('othername', String(30))
     ctime = Column('ctime', DateTime(), default=datetime.now)
+
 
 class Postlist(Base):
     __tablename__ = 'mg_postlist'
