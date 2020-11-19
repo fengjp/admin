@@ -22,6 +22,7 @@ from websdk.tools import convert
 from ast import literal_eval
 ### LDAP
 from websdk.ldap import LdapApi
+import datetime, time
 
 
 class LoginHandler(RequestHandler):
@@ -103,6 +104,23 @@ class LoginHandler(RequestHandler):
         if user_info.status != '0':
             return self.write(dict(code=-4, msg='账号被禁用'))
 
+        # 判断是否在允许的登录时段
+        try:
+            timeInterval = user_info.timeInterval
+            if timeInterval:
+                timeInterval = json.loads(timeInterval)
+                todate = datetime.date.today()
+                start_time_tuple = time.strptime(str(todate) + ' ' + timeInterval[0] + ':00', "%Y-%m-%d %H:%M:%S")
+                end_time_tuple = time.strptime(str(todate) + ' ' + timeInterval[1] + ':00', "%Y-%m-%d %H:%M:%S")
+                startTimeStamp = int(time.mktime(start_time_tuple))
+                endTimeStamp = int(time.mktime(end_time_tuple))
+                timeStamp = (int(time.time()))
+                # print(timeStamp, startTimeStamp, endTimeStamp, timeInterval)
+                if timeStamp < startTimeStamp or timeStamp > endTimeStamp:
+                    return self.write(dict(code=-10, msg='请在时间段 %s~%s 内登录' % (timeInterval[0], timeInterval[1])))
+        except Exception as e:
+            print('限制时间段登录 error: %s' % e)
+
         is_superuser = True if user_info.superuser == '0' else False
 
         ### 如果被标记为必须动态验证切没有输入动态密钥，则跳转到二维码添加密钥的地方
@@ -133,6 +151,18 @@ class LoginHandler(RequestHandler):
         login_ip_list = self.request.headers.get("X-Forwarded-For")
         if login_ip_list:
             login_ip = login_ip_list.split(",")[0]
+            # 限制IP登录
+            try:
+                limit_IP = user_info.limit_IP
+                if limit_IP:
+                    limit_IP = json.loads(limit_IP)
+                    ip_list = [i['ip'] for i in limit_IP]
+                    if len(ip_list) > 0 and ip_list[0] != '':
+                        if login_ip not in ip_list:
+                            return self.write(dict(code=-11, msg='IP: %s 禁止登录' % login_ip))
+            except Exception as e:
+                print('限制IP登录 error: %s' % e)
+
             with DBContext('w', None, True) as session:
                 session.query(Users).filter(Users.user_id == user_id).update({Users.last_ip: login_ip})
                 session.commit()

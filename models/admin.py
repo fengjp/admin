@@ -51,6 +51,8 @@ class Users(Base):
     status = Column('status', String(5), default='0')
     last_ip = Column('last_ip', String(20), default='')
     last_login = Column('last_login', DateTime(), default=datetime.now, onupdate=datetime.now)
+    timeInterval = Column('timeInterval', String(255), default='')
+    limit_IP = Column('limit_IP', String(255), default='')
     ctime = Column('ctime', DateTime(), default=datetime.now)
 
 

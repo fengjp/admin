@@ -55,6 +55,16 @@ class UserHandler(BaseHandler):
         with redis_conn.pipeline(transaction=False) as p:
             for msg in all_user:
                 data_dict = model_to_dict(msg)
+                try:
+                    if data_dict.get('timeInterval', ''):
+                        data_dict['timeInterval'] = json.loads(data_dict['timeInterval'])
+                except:
+                    data_dict['timeInterval'] = ''
+                try:
+                    if data_dict.get('limit_IP', ''):
+                        data_dict['limit_IP'] = json.loads(data_dict['limit_IP'])
+                except:
+                    data_dict['limit_IP'] = ''
                 data_dict.pop('password')
                 data_dict.pop('google_key')
                 data_dict['last_login'] = str(data_dict['last_login'])
@@ -76,7 +86,16 @@ class UserHandler(BaseHandler):
         no = data.get('no', None)
         email = data.get('email', None)
         user_state = data.get('user_state', '20')
-        if not username or not nickname or not department or not tel or not wechat or not no or not email:
+        timeInterval = data.get('timeInterval', '')
+        limit_IP = data.get('limit_IP', '')
+
+        if len(timeInterval) > 0:
+            timeInterval = json.dumps(timeInterval)
+
+        if len(limit_IP) > 0:
+            limit_IP = json.dumps(limit_IP)
+
+        if not username or not nickname or not department or not tel or not no or not email:
             return self.write(dict(code=-1, msg='参数不能为空'))
 
         with DBContext('r') as session:
@@ -84,6 +103,7 @@ class UserHandler(BaseHandler):
             user_info2 = session.query(Users).filter(Users.tel == tel).first()
             user_info3 = session.query(Users).filter(Users.email == email).first()
             user_info4 = session.query(Users).filter(Users.nickname == nickname).first()
+
         if user_info1:
             return self.write(dict(code=-2, msg='用户名已注册'))
 
@@ -107,7 +127,9 @@ class UserHandler(BaseHandler):
 
         with DBContext('w', None, True) as session:
             session.add(Users(username=username, password=password, nickname=nickname, department=department, tel=tel,
-                              wechat=wechat, no=no, email=email, google_key=mfa, superuser='10', status=user_state))
+                              wechat=wechat, no=no, email=email, google_key=mfa, superuser='10', status=user_state,
+                              timeInterval=timeInterval, limit_IP=limit_IP,
+                              ))
 
         self.write(dict(code=0, msg='如果没填写密码 则新用户密码为：123456'))
 
@@ -132,13 +154,49 @@ class UserHandler(BaseHandler):
         key = data.get('key', None)
         value = data.get('value', None)
         user_id = data.get('user_id', None)
+        username = data.get('username', None)
+        nickname = data.get('nickname', None)
+        department = data.get('department', None)
+        tel = data.get('tel', None)
+        no = data.get('no', None)
+        email = data.get('email', None)
+        timeInterval = data.get('timeInterval', '')
+        limit_IP = data.get('limit_IP', '')
 
-        if not key or not value or not user_id:
-            return self.write(dict(code=-1, msg='不能为空'))
+        if len(timeInterval) > 0:
+            timeInterval = json.dumps(timeInterval)
+        else:
+            timeInterval = ''
+
+        if len(limit_IP) > 0:
+            limit_IP = json.dumps(limit_IP)
+        else:
+            limit_IP = ''
+
+        if not user_id:
+            return self.write(dict(code=-1, msg='user_id不能为空'))
 
         try:
-            with DBContext('w', None, True) as session:
-                session.query(Users).filter(Users.user_id == user_id).update({key: value})
+            if key and value and user_id:
+                with DBContext('w', None, True) as session:
+                    session.query(Users).filter(Users.user_id == user_id).update({key: value})
+            elif user_id and username and nickname and department and tel and no and email:
+                with DBContext('w', None, True) as session:
+                    session.query(Users).filter(Users.user_id == user_id).update(
+                        {
+                            Users.username: username,
+                            Users.nickname: nickname,
+                            Users.department: department,
+                            Users.tel: tel,
+                            Users.no: no,
+                            Users.email: email,
+                            Users.timeInterval: timeInterval,
+                            Users.limit_IP: limit_IP,
+                        }
+                    )
+            else:
+                return self.write(dict(code=-3, msg='修改失败，请检查数据是否为空'))
+
         except Exception as e:
             return self.write(dict(code=-2, msg='修改失败，请检查数据是否合法或者重复'))
 
