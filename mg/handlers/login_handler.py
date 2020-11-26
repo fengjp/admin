@@ -187,7 +187,7 @@ class LoginHandler(RequestHandler):
             redis_conn.set(user_id, auth_key)
 
         return self.write(dict(code=0, auth_key=auth_key.decode(), username=user_info.username,
-                               nickname=user_info.nickname, msg='登录成功'))
+                               nickname=user_info.nickname, userId=str(user_info.user_id), msg='登录成功'))
 
 
 class LogoutHandler(BaseHandler):
