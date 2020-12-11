@@ -104,7 +104,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `mg_users` WRITE;
 /*!40000 ALTER TABLE `mg_users` DISABLE KEYS */;
-INSERT INTO `mg_users` VALUES (1,'admin','e10adc3949ba59abbe56e057f20f883e','admin','11111@qq.com','11111111111','','','admin','','0','0','180.168.11.84','2019-05-24 10:39:29','2017-12-21 14:26:04');
+INSERT INTO `mg_users` VALUES (1,'admin','e10adc3949ba59abbe56e057f20f883e','admin','11111@qq.com','11111111111','','','admin','','0','0','180.168.11.84','2019-05-24 10:39:29','2017-12-21 14:26:04','','');
 /*!40000 ALTER TABLE `mg_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
