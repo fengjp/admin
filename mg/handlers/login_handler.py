@@ -184,7 +184,7 @@ class LoginHandler(RequestHandler):
         # get_user_rules(user_id, is_superuser)
 
         # 将 auth_key 写入redis 作为 单点登录验证
-        if token_exp_hours:
+        if not is_superuser and token_exp_hours:
             ex = int(token_exp_hours) * 3600
             redis_conn.set(user_id, auth_key, ex=ex)
         else:
