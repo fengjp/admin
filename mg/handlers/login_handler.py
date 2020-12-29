@@ -139,13 +139,17 @@ class LoginHandler(RequestHandler):
         user_id = str(user_info.user_id)
 
         ### 生成token 并写入cookie
-        token_exp_hours = redis_conn.hget(const.APP_SETTINGS, const.TOKEN_EXP_TIME)
-        if token_exp_hours and convert(token_exp_hours):
+        if is_superuser:
             token_info = dict(user_id=user_id, username=user_info.username, nickname=user_info.nickname,
-                              email=user_info.email, is_superuser=is_superuser, exp_hours=token_exp_hours)
+                              email=user_info.email, is_superuser=is_superuser, exp_days=365)
         else:
-            token_info = dict(user_id=user_id, username=user_info.username, nickname=user_info.nickname,
-                              email=user_info.email, is_superuser=is_superuser)
+            token_exp_hours = redis_conn.hget(const.APP_SETTINGS, const.TOKEN_EXP_TIME)
+            if token_exp_hours and convert(token_exp_hours):
+                token_info = dict(user_id=user_id, username=user_info.username, nickname=user_info.nickname,
+                                  email=user_info.email, is_superuser=is_superuser, exp_hours=token_exp_hours)
+            else:
+                token_info = dict(user_id=user_id, username=user_info.username, nickname=user_info.nickname,
+                                  email=user_info.email, is_superuser=is_superuser)
         auth_token = AuthToken()
         auth_key = auth_token.encode_auth_token_v2(**token_info)
         login_ip_list = self.request.headers.get("X-Forwarded-For")
